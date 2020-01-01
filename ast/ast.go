@@ -43,12 +43,12 @@ func (p *Program) TokenLiteral() string {
 // and its value
 type LetStatement struct {
 	Token token.Token // token.LET token
-	Name *Identifier
+	Name  *Identifier
 	Value Expression
 }
 
 // StatementNode : dummy method
-func (ls *LetStatement) StatementNode() {}
+func (ls *LetStatement) statementNode() {}
 
 // TokenLiteral : get the literal value for the LET token
 func (ls *LetStatement) TokenLiteral() string {
