@@ -3,6 +3,8 @@ Package ast creates an AST out of statements and expressions
 */
 package ast
 
+// NOTE: All tokenLiteral methods are used only for testing/debugging
+
 import "github.com/dorin131/dorin-script/token"
 
 // Program : holds all the statements in the program
@@ -14,13 +16,13 @@ type Program struct {
 // usually on the left side of the assignment token
 type Statement interface {
 	Node
-	statementNode()
+	statementNode() // dummy method
 }
 
 // Expression : something that returns a value
 type Expression interface {
 	Node
-	expressionNode()
+	expressionNode() // dummy method
 }
 
 // Node : the Program, Statement and Expression are all nodes
@@ -45,7 +47,7 @@ type LetStatement struct {
 	Value Expression
 }
 
-// StatementNode : get the node for the LET statement
+// StatementNode : dummy method
 func (ls *LetStatement) StatementNode() {}
 
 // TokenLiteral : get the literal value for the LET token
@@ -59,7 +61,8 @@ type Identifier struct {
 	Value string
 }
 
-// expressionNode : get the node for an expression
+// expressionNode : dummy method
+// it is an expression because on its own it returns a value
 func (i *Identifier) expressionNode() {}
 
 // TokenLiteral : get the token literal value of an Identifier

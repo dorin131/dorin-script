@@ -4,22 +4,22 @@ Package parser is using the Lexer to tokenize the input
 package parser
 
 import (
-	"github/com/dorin131/dorin-script/lexer"
-	"github/com/dorin131/dorin-script/token"
-	"github/com/dorin131/dorin-script/ast"
+	"github.com/dorin131/dorin-script/ast"
+	"github.com/dorin131/dorin-script/lexer"
+	"github.com/dorin131/dorin-script/token"
 )
 
 // Parser : initialises a Lexer instance and reads the tokens
 type Parser struct {
 	l *lexer.Lexer
 
-	curToken token.Token
+	curToken  token.Token
 	peekToken token.Token
 }
 
 // New : creates a new parser and stores the first two tokens
 func New(l *lexer.Lexer) *Parser {
-	p := &Parser{l :l}
+	p := &Parser{l: l}
 
 	// read two tokens so that curToken and peekToken are set
 	p.nextToken()
