@@ -1,3 +1,6 @@
+/*
+Package lexer creates tokens out of the input
+*/
 package lexer
 
 import "github.com/dorin131/dorin-script/token"
@@ -10,7 +13,7 @@ type Lexer struct {
 	ch           byte // current char under examination
 }
 
-// New : Returns a new Lexer
+// New : Returns a new Lexer and loads the first character into ch
 func New(input string) *Lexer {
 	l := &Lexer{
 		input: input,
@@ -19,6 +22,7 @@ func New(input string) *Lexer {
 	return l
 }
 
+// readChar : loads the next xharacter into ch, or zero if no more input
 func (l *Lexer) readChar() {
 	if l.readPosition >= len(l.input) {
 		l.ch = 0
@@ -29,14 +33,18 @@ func (l *Lexer) readChar() {
 	l.readPosition++
 }
 
-// NextToken : Parses the next character from the input
+// NextToken : returns the next token from the input
+// it could be any of the tokens that are declared as constants
+// in token.go
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
+	// eat all white spaces
 	l.skipWhitespace()
 
 	switch l.ch {
 	case '=':
+		// check if it's ==
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
@@ -45,6 +53,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok = newToken(token.ASSIGN, l.ch)
 		}
 	case '!':
+		// check if it's !=
 		if l.peekChar() == '=' {
 			ch := l.ch
 			l.readChar()
@@ -95,6 +104,7 @@ func (l *Lexer) NextToken() token.Token {
 	return tok
 }
 
+// peekChar : just looking at the next character
 func (l *Lexer) peekChar() byte {
 	if l.readPosition >= len(l.input) {
 		return 0
@@ -102,6 +112,8 @@ func (l *Lexer) peekChar() byte {
 	return l.input[l.readPosition]
 }
 
+// readIdentifier : read characters for a user defined identifier
+// can be a variable name
 func (l *Lexer) readIdentifier() string {
 	position := l.position
 	for isLetter(l.ch) {
@@ -110,6 +122,7 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.position]
 }
 
+// readNumber : read all digits of a user defined number
 func (l *Lexer) readNumber() string {
 	position := l.position
 	for isDigit(l.ch) {
@@ -118,12 +131,14 @@ func (l *Lexer) readNumber() string {
 	return l.input[position:l.position]
 }
 
+// skipWhitespace : discard all invisible characters
 func (l *Lexer) skipWhitespace() {
 	for l.ch == ' ' || l.ch == '\t' || l.ch == '\n' || l.ch == '\r' {
 		l.readChar()
 	}
 }
 
+// newToken : create a Token struct
 func newToken(tokenType token.TokenType, ch byte) token.Token {
 	return token.Token{
 		Type:    tokenType,
@@ -131,10 +146,12 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 	}
 }
 
+// isLetter : check if the character is a letter
 func isLetter(ch byte) bool {
 	return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_'
 }
 
+// isDigit : check if character is a digit
 func isDigit(ch byte) bool {
 	return ch >= '0' && ch <= '9'
 }

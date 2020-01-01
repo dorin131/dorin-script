@@ -1,3 +1,6 @@
+/*
+Package repl scans the input and outputs all tokens (for now)
+*/
 package repl
 
 import (
