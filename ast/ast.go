@@ -12,6 +12,20 @@ type Program struct {
 	Statements []Statement
 }
 
+// TokenLiteral : returns the literal value of the first statement token
+// this is basically how we het the literal value of the top token
+func (p *Program) TokenLiteral() string {
+	if len(p.Statements) > 0 {
+		return p.Statements[0].TokenLiteral()
+	}
+	return ""
+}
+
+// Node : the Program, Statement and Expression are all nodes
+type Node interface {
+	TokenLiteral() string
+}
+
 // Statement : something that doesnt return a value
 // usually on the left side of the assignment token
 type Statement interface {
@@ -25,19 +39,28 @@ type Expression interface {
 	expressionNode() // dummy method
 }
 
-// Node : the Program, Statement and Expression are all nodes
-type Node interface {
-	TokenLiteral() string
+/*-----------------
+IDENTIFIER
+-----------------*/
+
+// Identifier : stores an IDENT token and its value
+type Identifier struct {
+	Token token.Token // token.IDENT token
+	Value string
 }
 
-// TokenLiteral : returns the literal value of the first statement token
-// this is basically how we het the literal value of the top token
-func (p *Program) TokenLiteral() string {
-	if len(p.Statements) > 0 {
-		return p.Statements[0].TokenLiteral()
-	}
-	return ""
+// expressionNode : dummy method
+// it is an expression because on its own it returns a value
+func (i *Identifier) expressionNode() {}
+
+// TokenLiteral : get the token literal value of an Identifier
+func (i *Identifier) TokenLiteral() string {
+	return i.Token.Literal
 }
+
+/*------------------
+LET STATEMENT
+------------------*/
 
 // LetStatement : contains the token type (LET), the name of the variable
 // and its value
@@ -55,17 +78,20 @@ func (ls *LetStatement) TokenLiteral() string {
 	return ls.Token.Literal
 }
 
-// Identifier : stores an IDENT token and its value
-type Identifier struct {
-	Token token.Token // token.IDENT token
-	Value string
+/*------------------
+RETURN STATEMENT
+------------------*/
+
+// ReturnStatement : e.g. "return 1"
+type ReturnStatement struct {
+	Token       token.Token
+	ReturnValue Expression
 }
 
-// expressionNode : dummy method
-// it is an expression because on its own it returns a value
-func (i *Identifier) expressionNode() {}
+// statementNode : dummy method
+func (rs *ReturnStatement) statementNode() {}
 
-// TokenLiteral : get the token literal value of an Identifier
-func (i *Identifier) TokenLiteral() string {
-	return i.Token.Literal
+// TokenLiteral : as expected
+func (rs *ReturnStatement) TokenLiteral() string {
+	return rs.Token.Literal
 }
