@@ -11,6 +11,11 @@ import (
 	"github.com/dorin131/dorin-script/token"
 )
 
+type (
+	prefixParserFn func() ast.Expression
+	infixParserFn  func(ast.Expression) ast.Expression
+)
+
 // Parser : initialises a Lexer instance and reads the tokens
 type Parser struct {
 	l *lexer.Lexer
@@ -18,6 +23,17 @@ type Parser struct {
 	curToken  token.Token
 	peekToken token.Token
 	errors    []string
+
+	prefixParserFns map[token.TokenType]prefixParserFn
+	infixParserFns  map[token.TokenType]infixParserFn
+}
+
+func (p *Parser) registerPrefix(tokenType token.TokenType, fn prefixParserFn) {
+	p.prefixParserFns[tokenType] = fn
+}
+
+func (p *Parser) registerInfix(tokenType token.TokenType, fn infixParserFn) {
+	p.infixParserFns[tokenType] = fn
 }
 
 // Errors : returns all parser errors
