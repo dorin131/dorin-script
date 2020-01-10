@@ -5,6 +5,7 @@ package parser
 
 import (
 	"fmt"
+
 	"github.com/dorin131/dorin-script/ast"
 	"github.com/dorin131/dorin-script/lexer"
 	"github.com/dorin131/dorin-script/token"

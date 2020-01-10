@@ -5,11 +5,26 @@ package ast
 
 // NOTE: All tokenLiteral methods are used only for testing/debugging
 
-import "github.com/dorin131/dorin-script/token"
+import (
+	"bytes"
+
+	"github.com/dorin131/dorin-script/token"
+)
 
 // Program : holds all the statements in the program
 type Program struct {
 	Statements []Statement
+}
+
+// String : returns all statements as a string
+func (p *Program) String() string {
+	var out bytes.Buffer
+
+	for _, s := range p.Statements {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
 }
 
 // TokenLiteral : returns the literal value of the first statement token
@@ -24,6 +39,7 @@ func (p *Program) TokenLiteral() string {
 // Node : the Program, Statement and Expression are all nodes
 type Node interface {
 	TokenLiteral() string
+	String() string
 }
 
 // Statement : something that doesnt return a value
@@ -40,7 +56,7 @@ type Expression interface {
 }
 
 /*-----------------
-IDENTIFIER
+IDENTIFIER EXPRESSION
 -----------------*/
 
 // Identifier : stores an IDENT token and its value
@@ -56,6 +72,10 @@ func (i *Identifier) expressionNode() {}
 // TokenLiteral : get the token literal value of an Identifier
 func (i *Identifier) TokenLiteral() string {
 	return i.Token.Literal
+}
+
+func (i *Identifier) String() string {
+	return i.Value
 }
 
 /*------------------
@@ -78,6 +98,21 @@ func (ls *LetStatement) TokenLiteral() string {
 	return ls.Token.Literal
 }
 
+func (ls *LetStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(ls.TokenLiteral() + " ")
+	out.WriteString(ls.Name.String())
+	out.WriteString(" = ")
+
+	if ls.Value != nil {
+		out.WriteString(ls.Value.String())
+	}
+
+	out.WriteString(";")
+	return out.String()
+}
+
 /*------------------
 RETURN STATEMENT
 ------------------*/
@@ -94,4 +129,43 @@ func (rs *ReturnStatement) statementNode() {}
 // TokenLiteral : as expected
 func (rs *ReturnStatement) TokenLiteral() string {
 	return rs.Token.Literal
+}
+
+func (rs *ReturnStatement) String() string {
+	var out bytes.Buffer
+
+	out.WriteString(rs.TokenLiteral() + " ")
+
+	if rs.ReturnValue != nil {
+		out.WriteString(rs.ReturnValue.String())
+	}
+
+	out.WriteString(";")
+
+	return out.String()
+}
+
+/*------------------
+EXPRESSION STATEMENT
+------------------*/
+
+// ExpressionStatement : is a wrapper for an expression, e.g. "1 + 2;"
+type ExpressionStatement struct {
+	Token      token.Token // first token of the expression
+	Expression Expression
+}
+
+// statementNode : dummy method
+func (es *ExpressionStatement) statementNode() {}
+
+// TokenLiteral : as expected
+func (es *ExpressionStatement) TokenLiteral() string {
+	return es.Token.Literal
+}
+
+func (es *ExpressionStatement) String() string {
+	if es.Expression != nil {
+		return es.Expression.String()
+	}
+	return ""
 }
